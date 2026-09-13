@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>三案例对撞 · AI 价值链的三个切片</title>
+<meta name="description" content="Karp × Jeff Dean × Aschenbrenner —— 应用层现金流 / 研究层耐心资本 / 金融层信仰杠杆的对撞分析">
+<style>
+:root {
+  --bg: #0a0e17;
+  --bg2: #0f1522;
+  --card: #131a2b;
+  --card2: #182136;
+  --border: #243049;
+  --text: #e8edf7;
+  --text2: #9aa8c4;
+  --text3: #6b7a99;
+  --karp: #f59e0b;
+  --karp-dim: rgba(245,158,11,.15);
+  --dean: #3b82f6;
+  --dean-dim: rgba(59,130,246,.15);
+  --aschen: #ef4444;
+  --aschen-dim: rgba(239,68,68,.15);
+  --spark: #22d3ee;
+  --good: #34d399;
+  --warn: #fbbf24;
+  --bad: #f87171;
+  --radius: 16px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.75;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+.container { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+.hero {
+  min-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 60px 20px;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(245,158,11,.08), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 25%, rgba(59,130,246,.08), transparent 60%),
+    radial-gradient(ellipse 50% 40% at 50% 85%, rgba(239,68,68,.08), transparent 60%),
+    var(--bg);
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  width: 2px; height: 100%;
+  background: linear-gradient(180deg, transparent, rgba(34,211,238,.3), transparent);
+  transform: translateX(-50%);
+  opacity: .5;
+}
+.hero-kicker {
+  font-size: 13px;
+  letter-spacing: 4px;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.hero h1 {
+  font-size: clamp(34px, 6vw, 58px);
+  font-weight: 800;
+  letter-spacing: 2px;
+  line-height: 1.2;
+  background: linear-gradient(135deg, #f59e0b, #f87171, #3b82f6, #22d3ee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: clamp(16px, 2.5vw, 22px);
+  color: var(--text2);
+  margin-top: 20px;
+  max-width: 640px;
+}
+.hero-photos {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+.hero-photo {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--border);
+  position: relative;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+  transition: transform .3s ease, border-color .3s ease;
+}
+.hero-photo:hover { transform: translateY(-4px); }
+.hero-photo.karp { border-color: rgba(245,158,11,.6); }
+.hero-photo.dean { border-color: rgba(59,130,246,.6); }
+.hero-photo.aschen { border-color: rgba(239,68,68,.6); }
+.hero-photo img { width: 100%; height: 100%; object-fit: cover; }
+.hero-photo.karp img { object-position: 50% 18%; }
+.hero-photo.dean img { object-position: 50% 15%; }
+.hero-photo.aschen img { object-position: 50% 0%; }
+.hero-photo .hp-name {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 14px 0 6px;
+  text-align: center;
+  background: linear-gradient(180deg, transparent, rgba(10,14,23,.85));
+  color: var(--text);
+}
+@media (max-width: 560px) {
+  .hero-photo { width: 96px; height: 96px; }
+  .hero-photo .hp-name { font-size: 10px; }
+}
+.section { padding: 64px 0; position: relative; }
+.section-title {
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: 800;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.section-title .num {
+  font-size: 14px;
+  color: var(--spark);
+  border: 1px solid var(--spark);
+  border-radius: 8px;
+  padding: 3px 10px;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+.section-lead {
+  color: var(--text2);
+  font-size: 17px;
+  margin-bottom: 36px;
+  max-width: 760px;
+}
+
+.players {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 8px;
+}
+.player {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform .25s ease, box-shadow .25s ease;
+  position: relative;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+}
+.player:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,.4); }
+.player-top { height: 4px; }
+.player-karp .player-top { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.player-dean .player-top { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.player-aschen .player-top { background: linear-gradient(90deg, #ef4444, #f87171); }
+/* 左侧色条：卡片身份的垂直线索 */
+.player::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  z-index: 3;
+}
+.player-karp::before { background: linear-gradient(180deg, #f59e0b, #fbbf24); }
+.player-dean::before { background: linear-gradient(180deg, #3b82f6, #60a5fa); }
+.player-aschen::before { background: linear-gradient(180deg, #ef4444, #f87171); }
+.player-photo-wrap {
+  position: relative;
+  overflow: hidden;
+  background: var(--card2);
+}
+.player-photo-wrap img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .4s ease;
+}
+.player-karp .player-photo-wrap img { object-position: 50% 18%; }
+.player-dean .player-photo-wrap img { object-position: 50% 15%; }
+.player-aschen .player-photo-wrap img { object-position: 50% 0%; }
+.player:hover .player-photo-wrap img { transform: scale(1.04); }
+.player-photo-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 60%;
+  background: linear-gradient(180deg, transparent, var(--card));
+}
+.player-photo-tag {
+  position: absolute;
+  top: 12px; right: 12px;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  backdrop-filter: blur(6px);
+  z-index: 2;
+}
+.player-karp .player-photo-tag { background: var(--karp-dim); color: var(--karp); border: 1px solid rgba(245,158,11,.4); }
+.player-dean .player-photo-tag { background: var(--dean-dim); color: #60a5fa; border: 1px solid rgba(59,130,246,.4); }
+.player-aschen .player-photo-tag { background: var(--aschen-dim); color: var(--bad); border: 1px solid rgba(239,68,68,.4); }
+.player-body { padding: 22px 26px; display: flex; flex-direction: column; justify-content: center; }
+.player-name {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+.player-role { font-size: 13px; color: var(--text2); margin-bottom: 12px; }
+.player-layer {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+.player-karp .player-layer { background: var(--karp-dim); color: var(--karp); }
+.player-dean .player-layer { background: var(--dean-dim); color: #60a5fa; }
+.player-aschen .player-layer { background: var(--aschen-dim); color: var(--bad); }
+.player-desc { font-size: 14px; color: var(--text2); margin-bottom: 12px; }
+.player-facts { font-size: 13px; color: var(--text3); border-top: 1px solid var(--border); padding-top: 10px; }
+.player-facts div { margin-bottom: 4px; }
+.player-facts b { color: var(--text2); font-weight: 600; }
+@media (max-width: 760px) {
+  .player { grid-template-columns: 1fr; }
+  .player-photo-wrap { aspect-ratio: 16 / 9; position: relative; }
+  .player-photo-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; }
+}
+.ai-note {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 10px;
+  font-style: italic;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 680px;
+  font-size: 14px;
+}
+th, td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+th {
+  background: var(--card2);
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+}
+tr:last-child td { border-bottom: none; }
+td:first-child {
+  color: var(--text2);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.cell-karp { color: var(--karp); }
+.cell-dean { color: #60a5fa; }
+.cell-aschen { color: var(--bad); }
+
+.collision {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.collision::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--karp), var(--spark), var(--aschen));
+  opacity: .6;
+}
+.collision h3 {
+  font-size: 19px;
+  font-weight: 800;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.collision h3 .cnum {
+  font-size: 12px;
+  color: var(--spark);
+  border: 1px solid var(--spark);
+  border-radius: 6px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+}
+.claim { margin-bottom: 10px; padding-left: 16px; border-left: 3px solid var(--border); }
+.claim-karp { border-left-color: var(--karp); }
+.claim-dean { border-left-color: var(--dean); }
+.claim-aschen { border-left-color: var(--aschen); }
+.claim .who { font-weight: 700; font-size: 13px; display: block; margin-bottom: 2px; }
+.claim-karp .who { color: var(--karp); }
+.claim-dean .who { color: #60a5fa; }
+.claim-aschen .who { color: var(--bad); }
+.claim p { font-size: 14.5px; color: var(--text2); }
+.collision-conclusion {
+  margin-top: 18px;
+  background: var(--bg2);
+  border-radius: 12px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+}
+.collision-conclusion .tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--spark);
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+.collision-conclusion p { font-size: 15px; color: var(--text); }
+.collision-conclusion b { color: var(--spark); }
+
+/* 最大发现：全页灵魂，视觉重音 */
+.finding-section {
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(34,211,238,.07), transparent 70%),
+              radial-gradient(ellipse 60% 50% at 80% 100%, rgba(245,158,11,.05), transparent 70%);
+  border-top: 1px solid rgba(34,211,238,.15);
+  border-bottom: 1px solid rgba(34,211,238,.15);
+}
+.finding-section .finding {
+  background: linear-gradient(135deg, rgba(34,211,238,.1), rgba(245,158,11,.07));
+  border: 1px solid rgba(34,211,238,.35);
+  box-shadow: 0 0 60px rgba(34,211,238,.08), inset 0 0 40px rgba(34,211,238,.04);
+}
+.finding-section .section-title { justify-content: center; }
+.finding-section .section-lead { margin-left: auto; margin-right: auto; text-align: center; }
+
+/* 爆仓故事：叙事高潮背景带 */
+#aschen { background: linear-gradient(180deg, transparent, rgba(239,68,68,.04), transparent); }
+#aschen .section-title .num { color: var(--bad); border-color: var(--bad); }
+
+.finding {
+  background: linear-gradient(135deg, rgba(34,211,238,.08), rgba(245,158,11,.06));
+  border: 1px solid rgba(34,211,238,.3);
+  border-radius: var(--radius);
+  padding: 40px 32px;
+  text-align: center;
+  margin: 24px 0;
+}
+.finding .kicker {
+  font-size: 13px;
+  letter-spacing: 4px;
+  color: var(--spark);
+  margin-bottom: 16px;
+}
+.finding h2 {
+  font-size: clamp(26px, 5vw, 40px);
+  font-weight: 900;
+  line-height: 1.4;
+  margin-bottom: 24px;
+}
+.finding h2 .loop { color: var(--good); }
+.finding h2 .direction {
+  color: var(--bad);
+  text-decoration: line-through;
+  text-decoration-color: rgba(248,113,113,.6);
+  text-decoration-thickness: 4px;
+  position: relative;
+}
+.finding h2 .direction::after {
+  content: '✕';
+  position: absolute;
+  right: -34px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--bad);
+  -webkit-text-fill-color: var(--bad);
+  font-size: .7em;
+  opacity: .9;
+}
+.loop-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+  text-align: left;
+}
+@media (max-width: 700px) { .loop-cards { grid-template-columns: 1fr; } }
+.loop-card {
+  background: rgba(19,26,43,.8);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+}
+.loop-card .lname { font-weight: 700; font-size: 15px; margin-bottom: 8px; }
+.loop-card .lname.k { color: var(--karp); }
+.loop-card .lname.d { color: #60a5fa; }
+.loop-card .lname.a { color: var(--bad); }
+.loop-card p { font-size: 13.5px; color: var(--text2); }
+.loop-card .cycle { font-size: 12.5px; color: var(--text3); margin-top: 8px; }
+.loop-card .cycle b { color: var(--good); }
+.loop-card.none { opacity: .75; border-style: dashed; }
+
+.story-timeline { margin-top: 8px; position: relative; padding-left: 28px; }
+.story-timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px; top: 4px; bottom: 4px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--aschen), var(--warn), var(--spark));
+}
+.story-item { position: relative; margin-bottom: 22px; }
+.story-item::before {
+  content: '';
+  position: absolute;
+  left: -28px; top: 8px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 2px solid var(--aschen);
+}
+.story-item.good::before { border-color: var(--good); }
+.story-item.warn::before { border-color: var(--warn); }
+.story-item.peak::before { border-color: var(--spark); }
+.story-item h4 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.story-item .when { font-size: 12px; color: var(--text3); font-weight: 600; letter-spacing: 1px; }
+.story-item p { font-size: 14.5px; color: var(--text2); }
+.story-item p b { color: var(--text); }
+.story-item p .hot { color: var(--karp); font-weight: 700; }
+.story-item p .cold { color: var(--bad); font-weight: 700; }
+.story-item.good h4 { color: var(--good); }
+.story-item.warn h4 { color: var(--warn); }
+.story-item.cold h4 { color: var(--bad); }
+.story-item.peak h4 { color: var(--spark); }
+.story-item { padding: 14px 18px; border-radius: 12px; background: rgba(19,26,43,.5); border: 1px solid var(--border); }
+.story-item.cold { background: rgba(239,68,68,.06); border-color: rgba(239,68,68,.25); }
+.story-item.peak { background: rgba(34,211,238,.05); border-color: rgba(34,211,238,.2); }
+.story-item.good { background: rgba(52,211,153,.05); border-color: rgba(52,211,153,.2); }
+.story-item.warn { background: rgba(251,191,36,.05); border-color: rgba(251,191,36,.2); }
+.story-item .story-quote {
+  margin-top: 12px; padding: 10px 14px;
+  border-left: 3px solid var(--spark);
+  background: rgba(255,255,255,.03);
+  border-radius: 0 8px 8px 0;
+  font-size: 13px; color: var(--text2);
+  line-height: 1.7;
+}
+.story-item .story-quote b { color: var(--karp); font-weight: 600; }
+.story-item.cold .story-quote b { color: var(--bad); }
+.story-item.good .story-quote b { color: var(--good); }
+.story-item.peak .story-quote b { color: var(--spark); }
+.var-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+  margin-bottom: 26px;
+}
+.var-chip {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 14px; text-align: center;
+  transition: border-color .3s, transform .3s;
+}
+.var-chip:hover { border-color: var(--spark); transform: translateY(-2px); }
+.var-chip .vi { font-size: 22px; margin-bottom: 8px; }
+.var-chip .vt { font-size: 13px; font-weight: 700; color: var(--text); }
+.var-chip .vs { font-size: 11.5px; color: var(--text3); margin-top: 4px; line-height: 1.5; }
+.var-chip.active { border-color: var(--spark); box-shadow: 0 0 0 1px rgba(34,211,238,.2); }
+@media (max-width: 760px) { .var-grid { grid-template-columns: repeat(2, 1fr); } }
+.counter {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 16px;
+  align-items: center;
+}
+@media (max-width: 760px) { .counter { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .counter { grid-template-columns: 1fr; } }
+.counter-side {
+  border-radius: 12px;
+  padding: 20px;
+}
+.counter-side .side-tag {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  display: block;
+}
+.counter-attack {
+  background: rgba(248,113,113,.06);
+  border: 1px solid rgba(248,113,113,.25);
+}
+.counter-attack .side-tag { color: var(--bad); }
+.counter-attack blockquote {
+  border: none;
+  padding: 0;
+  font-size: 15px;
+  color: var(--text2);
+  font-style: italic;
+  margin: 0;
+}
+.counter-defense {
+  background: rgba(52,211,153,.06);
+  border: 1px solid rgba(52,211,153,.25);
+}
+.counter-defense .side-tag { color: var(--good); }
+.counter-defense h4 { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: var(--good); }
+.counter-defense p { font-size: 14.5px; color: var(--text2); }
+.counter-vs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 18px;
+  color: var(--spark);
+  text-shadow: 0 0 16px rgba(34,211,238,.4);
+}
+@media (max-width: 760px) { .counter-vs { display: none; } }
+
+.conclusion {
+  background: linear-gradient(160deg, var(--card2), var(--bg2));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 40px 32px;
+  margin: 24px 0;
+}
+.conclusion h3 { font-size: 15px; letter-spacing: 3px; color: var(--spark); margin-bottom: 16px; }
+.conclusion .big {
+  font-size: clamp(19px, 3vw, 24px);
+  font-weight: 800;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+.conclusion .big b { color: var(--spark); }
+.invest {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 700px) { .invest { grid-template-columns: 1fr; } }
+.invest-card {
+  background: rgba(19,26,43,.7);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  font-size: 13.5px;
+  color: var(--text2);
+}
+.invest-card .rank { font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+.invest-card.rank1 { border-color: rgba(52,211,153,.4); }
+.invest-card.rank1 .rank { color: var(--good); }
+.invest-card.rank2 { border-color: rgba(251,191,36,.4); }
+.invest-card.rank2 .rank { color: var(--warn); }
+.invest-card.rank3 { border-color: rgba(248,113,113,.4); }
+.invest-card.rank3 .rank { color: var(--bad); }
+.invest-card p b { color: var(--text); }
+
+.footer {
+  padding: 48px 0 60px;
+  text-align: center;
+  color: var(--text3);
+  font-size: 13px;
+  border-top: 1px solid var(--border);
+  margin-top: 40px;
+}
+.footer .sig { margin-top: 8px; color: var(--text2); }
+
+.fade-in { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10,14,23,.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(36,48,73,.6);
+  padding: 10px 0;
+}
+.nav-inner { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.nav-title {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.nav-title .logo {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--karp), var(--spark), var(--aschen));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #0a0e17;
+  font-weight: 900;
+}
+.nav-title .logo svg { width: 13px; height: 13px; }
+.nav-links { display: flex; gap: 6px; font-size: 13px; }
+.nav-links a {
+  color: var(--text2);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 100px;
+  transition: all .2s ease;
+  white-space: nowrap;
+}
+.nav-links a:hover { color: var(--spark); background: rgba(34,211,238,.08); }
+.nav-links a.active { color: var(--spark); background: rgba(34,211,238,.12); font-weight: 700; }
+/* 移动端：单行横滑，永不换行 */
+@media (max-width: 860px) {
+  .nav-inner { gap: 10px; }
+  .nav-links {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .nav-links::-webkit-scrollbar { display: none; }
+  .nav-title { font-size: 12.5px; }
+  .nav-title .nav-title-text { display: none; }
+  .nav-title .logo { width: 20px; height: 20px; }
+  .nav-links a { padding: 5px 10px; font-size: 12.5px; }
+}
+
+.back-top {
+  position: fixed;
+  bottom: 28px; right: 28px;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: var(--card2);
+  border: 1px solid var(--spark);
+  color: var(--spark);
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 99;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(12px);
+  transition: all .3s ease;
+  box-shadow: 0 4px 16px rgba(0,0,0,.4);
+}
+.back-top.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.back-top:hover { background: rgba(34,211,238,.15); }
+
+.progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--karp), var(--spark), var(--aschen));
+  z-index: 200;
+  transition: width .1s linear;
+}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<nav class="nav" id="nav">
+  <div class="container nav-inner">
+    <div class="nav-title"><span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4 L3 12 L7 20"/><path d="M17 4 L21 12 L17 20"/></svg></span><span class="nav-title-text">三案例对撞 · AI 价值链</span></div>
+    <div class="nav-links">
+      <a href="#players">三切片</a>
+      <a href="#collisions">对撞点</a>
+      <a href="#aschen">爆仓故事</a>
+      <a href="#svws">硅谷vs华尔街</a>
+      <a href="#finding">最大发现</a>
+      <a href="#conclusion">投资判断</a>
+    </div>
+  </div>
+</nav>
+<header class="hero">
+  <div class="hero-kicker">COLLISION ANALYSIS · 2026-08</div>
+  <h1>三案例对撞</h1>
+  <p class="hero-sub">三个人的命运系于同一个未知数：<b>递归自我改进是否成立</b>。但他们各自的资本结构，决定了谁先出局。</p>
+  <div class="hero-photos">
+    <div class="hero-photo karp"><img src="karp.webp" alt="Alex Karp" loading="eager"><span class="hp-name">Karp</span></div>
+    <div class="hero-photo dean"><img src="dean.webp" alt="Jeff Dean" loading="eager"><span class="hp-name">Jeff Dean</span></div>
+    <div class="hero-photo aschen"><img src="aschen.webp" alt="Leopold Aschenbrenner" loading="eager"><span class="hp-name">Aschenbrenner</span></div>
+  </div>
+</header>
+<section class="section" id="players">
+  <div class="container">
+    <div class="section-title"><span class="num">01</span>三个玩家 · AI 价值链的三个切片</div>
+    <p class="section-lead">三个都是「顶尖 AI 精英脱离大机构单干」，但各自的资本结构决定了他们在价值链上占据完全不同的位置。</p>
+    <div class="players">
+      <div class="player player-karp">
+        <div class="player-photo-wrap">
+          <img src="karp.webp" alt="Alex Karp" loading="lazy">
+          <span class="player-photo-tag">应用层 · 下游</span>
+        </div>
+        <div class="player-body">
+          <div class="player-name">Alex Karp</div>
+          <div class="player-role">Palantir CEO · 企业软件现金流</div>
+          <p class="player-desc">「买 Token 创造不了价值。」AI 价值链的现金流端：把模型装进高风险企业场景，靠信任和现场交付收钱。</p>
+          <div class="player-facts">
+            <div><b>变现：</b>软件现金流</div>
+            <div><b>壁垒：</b>数据主权信任 + FDE 现场</div>
+            <div><b>命门：</b>模型厂商下沉应用层</div>
+          </div>
+        </div>
+      </div>
+      <div class="player player-dean">
+        <div class="player-photo-wrap">
+          <img src="dean.webp" alt="Jeff Dean" loading="lazy">
+          <span class="player-photo-tag">研究层 · 上游</span>
+        </div>
+        <div class="player-body">
+          <div class="player-name">Jeff Dean</div>
+          <div class="player-role">Discovery Loop 创始人 · 自动化科研</div>
+          <p class="player-desc">Google 27 年老将离开大厂，用 AI 自动化「假设→实验→评估→迭代」的科学循环。Alphabet 第一年算力全包。</p><div class="story-quote" style="margin-top:10px">「算力本身不创造价值，<b>围绕算力的循环</b>才创造价值。」</div>
+          <div class="player-facts">
+            <div><b>变现：</b>十年尺度耐心资本</div>
+            <div><b>壁垒：</b>天才 + 基础设施 + 递归暗线</div>
+            <div><b>命门：</b>递归自我改进不可验证</div>
+          </div>
+        </div>
+      </div>
+      <div class="player player-aschen">
+        <div class="player-photo-wrap">
+          <img src="aschen.webp" alt="Leopold Aschenbrenner" loading="lazy">
+          <span class="player-photo-tag">金融层 · 定价</span>
+        </div>
+        <div class="player-body">
+          <div class="player-name">Leopold Aschenbrenner</div>
+          <div class="player-role">Situational Awareness 基金 · 信仰资本 + 杠杆</div>
+          <p class="player-desc">前 OpenAI 研究员，一篇 165 页宣言募到百亿资金，四倍杠杆重仓 AI 基建。方向看对，被杠杆反噬。</p><div class="story-quote" style="margin-top:10px">「他没有突然改变对 AI 的判断，<b>只是他的账户已经没有资格继续等待</b>。」</div>
+          <div class="player-facts">
+            <div><b>变现：</b>信仰溢价 + 杠杆放大</div>
+            <div><b>壁垒：</b>叙事能力 + 判断力</div>
+            <div><b>命门：</b>杠杆击穿信仰</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="section-title"><span class="num">02</span>定位对比 · 三种资本结构</div>
+    <p class="section-lead">对撞的价值不在三人的「说法」一致，而在三个行动的资本结构差异恰好覆盖了 AI 价值链的完整光谱。</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>维度</th>
+            <th>Karp（Palantir）</th>
+            <th>Jeff Dean（Discovery Loop）</th>
+            <th>Aschenbrenner（SA Fund）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>价值链位置</td>
+            <td class="cell-karp">下游应用层<br><small style="color:var(--text3)">卖企业软件</small></td>
+            <td class="cell-dean">上游研究层<br><small style="color:var(--text3)">自动化科研</small></td>
+            <td class="cell-aschen">金融定价层<br><small style="color:var(--text3)">赌 AI 方向</small></td>
+          </tr>
+          <tr>
+            <td>变现模式</td>
+            <td class="cell-karp">现金流<br><small style="color:var(--text3)">150-180 亿 FCF 愿景</small></td>
+            <td class="cell-dean">耐心资本<br><small style="color:var(--text3)">Alphabet 算力全包</small></td>
+            <td class="cell-aschen">信仰资本<br><small style="color:var(--text3)">杠杆放大敞口</small></td>
+          </tr>
+          <tr>
+            <td>时间尺度</td>
+            <td class="cell-karp">当下现金流<br><small style="color:var(--text3)">「此刻的天堂」</small></td>
+            <td class="cell-dean">十年尺度<br><small style="color:var(--text3)">PBC 法律承诺</small></td>
+            <td class="cell-aschen">长期叙事<br><small style="color:var(--text3)">爆仓后仍被追捧</small></td>
+          </tr>
+          <tr>
+            <td>对模型厂商</td>
+            <td class="cell-karp">竞争<br><small style="color:var(--text3)">防下沉应用层</small></td>
+            <td class="cell-dean">共生 + 竞争<br><small style="color:var(--text3)">算力来自 Alphabet</small></td>
+            <td class="cell-aschen">下注<br><small style="color:var(--text3)">赌模型持续进步</small></td>
+          </tr>
+          <tr>
+            <td>信任契约</td>
+            <td class="cell-karp">数据主权信任<br><small style="color:var(--text3)">客户怕 IP 外流</small></td>
+            <td class="cell-dean">科研能力信任<br><small style="color:var(--text3)">单一金主供血</small></td>
+            <td class="cell-aschen">方向判断信任<br><small style="color:var(--text3)">身份认同型资金</small></td>
+          </tr>
+          <tr>
+            <td>杠杆硬度</td>
+            <td class="cell-karp">软<br><small style="color:var(--text3)">远期预测</small></td>
+            <td class="cell-dean">软<br><small style="color:var(--text3)">金主可撤</small></td>
+            <td class="cell-aschen">硬<br><small style="color:var(--text3)">margin call 不由信仰转移</small></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<section class="section" id="collisions">
+  <div class="container">
+    <div class="section-title"><span class="num">03</span>四个对撞点</div>
+    <p class="section-lead">每个对撞点：三人的立场互相矛盾，但拼起来恰好是一枚硬币的三面。</p>
+
+    <div class="collision">
+      <h3><span class="cnum">对撞 1</span>价值捕获位置：三个答案互相矛盾</h3>
+      <div class="claim claim-karp"><span class="who">Karp 说</span><p>价值在应用层，模型层边际成本趋零会稀释。</p></div>
+      <div class="claim claim-dean"><span class="who">Jeff Dean 的行动说</span><p>价值在研究层。否则不会离开 Google 自立。如果模型层没价值，为什么要用 AI 自动化模型研究？</p></div>
+      <div class="claim claim-aschen"><span class="who">Aschenbrenner 的行动说</span><p>价值在叙事层。他的基金不产出任何技术，纯靠「AI 方向判断正确」获得百亿规模。</p></div>
+      <div class="collision-conclusion">
+        <div class="tag">对撞结论</div>
+        <p>三者不矛盾：<b>价值捕获正从「模型层」（烧钱换份额）向两侧分散</b>：应用层吃现金流、研究层吃资本供给、金融层吃信仰溢价。<b>真正被挤的是中间</b>：纯模型层烧钱，三人都不是模型层玩家，都在「模型层的供应商或下游」赚钱。</p>
+      </div>
+    </div>
+
+    <div class="collision">
+      <h3><span class="cnum">对撞 2</span>信任结构：信仰支撑估值，支撑不了杠杆</h3>
+      <div class="claim claim-karp"><span class="who">Karp</span><p>卖数据主权信任，客户怕 IP 外流。</p></div>
+      <div class="claim claim-dean"><span class="who">Jeff Dean</span><p>卖科研能力信任，Alphabet 供血 = 承认体内做不了。</p></div>
+      <div class="claim claim-aschen"><span class="who">Aschenbrenner</span><p>卖方向判断信任，LP 信仰「他懂 AI」。</p></div>
+      <div class="collision-conclusion">
+        <div class="tag">最锋利处</div>
+        <p>Aschenbrenner 的爆仓暴露了<b>信任的极限</b>。硅谷 LP 说「英雄的伤疤」，但 Citadel 的 margin call 是硬性的。<b>信仰可以支撑估值，支撑不了杠杆。</b>Karp 的现金流是软性的（远期预测）、Jeff Dean 的算力是软性的（金主可撤），只有 Aschenbrenner 的杠杆是硬性的，所以他第一个爆。这是资本结构决定论：<b>谁的杠杆最硬，谁最先暴露 AI 叙事的裂缝</b>。</p>
+      </div>
+    </div>
+
+    <div class="collision">
+      <h3><span class="cnum">对撞 3</span>Token / 算力的角色：三种完全不同的用法</h3>
+      <div class="claim claim-karp"><span class="who">Karp 说</span><p>「买 Token 创造不了价值」。Token 是成本，产出在应用层。</p></div>
+      <div class="claim claim-dean"><span class="who">Jeff Dean 做</span><p>烧海量算力做实验循环。Token/算力是生产资料，关键指标是「实验循环数」不是 token 数。</p></div>
+      <div class="claim claim-aschen"><span class="who">Aschenbrenner 不碰</span><p>基金不烧算力，只赌 AI 方向，算力是别人的事。</p></div>
+      <div class="collision-conclusion">
+        <div class="tag">对撞结论</div>
+        <p>Karp 和 Jeff Dean 说的是同一件事的两面：<b>「算力本身不创造价值，围绕算力的循环才创造价值」</b>。Karp 的循环是「模型→企业场景→现金流」（应用循环），Jeff Dean 的循环是「假设→实验→评估→迭代」（科研循环）。<b>Aschenbrenner 是唯一没有循环的人</b>：只赌方向，不参与任何循环，价值锚最虚，靠杠杆放大，然后被杠杆反噬。</p>
+      </div>
+    </div>
+
+    <div class="collision">
+      <h3><span class="cnum">对撞 4</span>递归自我改进：三人的终极分歧</h3>
+      <div class="claim claim-karp"><span class="who">Karp 的立场</span><p>软件三层论里「PhD 团队 + LLM 壁垒最低」，明确认为研究层不是价值核心。</p></div>
+      <div class="claim claim-dean"><span class="who">Jeff Dean 的暗线</span><p>「用 AI 造更强的 AI」。Discovery Loop 的真正杀手锏，Alphabet 供血的真正原因。</p></div>
+      <div class="claim claim-aschen"><span class="who">Aschenbrenner 的赌注</span><p>基金重仓的正是「递归自我改进会加速」，SA 论文的核心论点。</p></div>
+      <div class="collision-conclusion">
+        <div class="tag">对撞结论</div>
+        <p><b>Jeff Dean 和 Aschenbrenner 在同一侧（赌递归自我改进），Karp 在另一侧（赌应用层价值）</b>。如果递归自我改进真的跑通，Karp 的「PhD 团队壁垒最低」会成立但应用层也会被压缩；如果跑不通，Jeff Dean 的十年故事缩水成 AutoML 加速器，Aschenbrenner 的杠杆叙事失去支点。<b>三个人的命运在同一个未知数上：分歧不在「AI 有没有价值」，在「递归自我改进是否成立」，而这个变量三者都无法控制。</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section" id="aschen">
+  <div class="container">
+    <div class="section-title"><span class="num">04</span>Aschenbrenner 案例 · 从先知到爆仓</div>
+    <p class="section-lead">AI 叙事最极端的资本结构样本：两年走完别人一生的路，一个月走完下坡。</p>
+    <div class="story-timeline">
+      <div class="story-item">
+        <div class="when">2021 · 哥伦比亚大学</div>
+        <h4>医生世家走出的 AI 天才</h4>
+        <p>生于德国，父母均为医生。<b>19 岁以全校第一毕业</b>，获经济学与数理统计双学位，在校联合创立「有效利他主义」（EA）分会。后来这个理念把他带进了 FTX。</p><div class="story-quote"><b>19 岁</b>，医生世家，全校第一：一个相信「用理性改变世界」的年轻人入场。</div>
+      </div>
+      <div class="story-item">
+        <div class="when">2022 · FTX → OpenAI</div>
+        <h4>SBF 的小弟 → Ilya 的门徒</h4>
+        <p>2022 年 2 月加入 <b>FTX Future Fund</b>（SBF 的慈善基金），直到 11 月 FTX 暴雷前夕离开。2023 年转投 OpenAI，进入 <b>Ilya Sutskever 和 Jan Leike 领导的 Superalignment 团队</b>。因一份安全备忘录与董事会产生分歧，2024 年 4 月被 OpenAI 以「信息泄露」为由解雇。一个月后 Superalignment 团队解散，Ilya 也离开了。</p><div class="story-quote">从 SBF 到 Ilya：他两次站在<b>最激进想法的最前沿</b>。</div>
+      </div>
+      <div class="story-item peak">
+        <div class="when">2024 年 6 月 · 165 页宣言</div>
+        <h4>《Situational Awareness》：AI 时代的「长电报」</h4>
+        <p>离开 OpenAI 仅两个月，他写出 <b>165 页超级论文《情境感知：未来十年》</b>：预测 AGI 到来、设想超级智能路径、描述人类四大风险。这篇宣言像病毒一样在硅谷和华盛顿疯传，科技圈开始叫他<b class="hot">「AI 时代的先知」</b>。</p><div class="story-quote">165 页，两个月：<b>一个人的思想可以成为一个时代的定价锚</b>。</div>
+      </div>
+      <div class="story-item good">
+        <div class="when">2024 年 9 月 · 创立基金</div>
+        <h4>Situational Awareness LP：论文同名基金</h4>
+        <p>从 <b>2.25 亿美元</b>起步，二十个月后规模超 <b>200 亿美元</b>。LP 包括 Stripe 联合创始人、前 GitHub CEO、知名投资人。重仓 AI 基础设施（能源/算力/光通信/存储），<b>Anthropic 占基金资产五分之一</b>（估值 6150 亿→96500 亿）。最赚钱的一笔：SK 海力士。</p><div class="story-quote">从 2.25 亿到 200 亿：<b>叙事 + 杠杆 = 最快的资本复合机</b>。</div>
+      </div>
+      <div class="story-item warn">
+        <div class="when">2026 年 6 月 · 巅峰</div>
+        <h4>450 亿美元 · 年度净回报 439%</h4>
+        <p>成立以来累计回报 <b class="hot">超 1000%</b>，今年截至 6 月底年度净回报 <b class="hot">439%</b>，资产规模一度达 <b class="hot">450 亿美元</b>。粉丝像研读圣经一样分析他的持仓，甚至有 APP 推出「一键跟单」。Jane Street 罕见地把钱交给他。</p><div class="story-quote">450 亿，+439%：<b>站在山顶时，所有人都以为路只有一条</b>。</div>
+      </div>
+      <div class="story-item cold">
+        <div class="when">2026 年 7 月 · 噩梦</div>
+        <h4>四倍杠杆 × AI 基建暴跌 = 爆仓</h4>
+        <p>一个月里纳斯达克 100 跌约 10%、费城半导体指数跌 25%、韩国市场回落超 30%。他重仓的 AI 基建股（Nebius、SanDisk、Bloom Energy、CoreWeave）月内跌幅超 30%。<b>杠杆可能接近四倍</b>，市场跌下来的每一美元都变成更深的一刀。公开账面单月亏损 <b class="cold">47-55 亿美元</b>，其中 <b>93% 的亏损集中在 8 只 AI 基建重仓股</b>。对冲设计失效：半导体看跌期权收益无法抵消多头亏损，空头反而因资金回流传统软件上涨产生亏损。</p><div class="story-quote">四倍杠杆：<b>方向对的人，被波动本身杀死</b>。</div>
+      </div>
+      <div class="story-item cold">
+        <div class="when">2026 年 7 月 29 日 · 出局</div>
+        <h4>打包卖给 Citadel</h4>
+        <p>六天前他还在给投资人的信里说「这是 2025 年初以来最好的买入机会」，六天后他把这些「最好的买入机会」全部卖给了肯·格里芬的 Citadel。私募资产无法快速变现，融资尝试失败，<b>基金实质终结，享年两岁</b>。</p><div class="story-quote">六天前「最好的买入机会」，六天后全部卖出：<b>信仰的时间尺度，扛不住 margin call 的分钟尺度</b>。</div>
+      </div>
+      <div class="story-item cold">
+        <div class="when">2026 年 7 月 30 日 · 反讽</div>
+        <h4>卖出次日，市场反弹</h4>
+        <p>卖出仓位次日美股 AI 板块大幅反弹。<b>他的长期方向判断没错，但他已不再持有</b>。最终成果被 Citadel 接手。「他没有突然改变对 AI 的判断，只是他的账户已经没有资格继续等待。」</p><div class="story-quote">「他没有突然改变对 AI 的判断，<b>只是他的账户已经没有资格继续等待</b>。」</div>
+      </div>
+      <div class="story-item good">
+        <div class="when">2026 年 8 月 · 更深的讽刺</div>
+        <h4>爆仓之后，硅谷抢着追加投资</h4>
+        <p>margin call 后他致信投资者认错、清除全部杠杆，称这是「代价高昂但无价的教训」。反常识的是：<b>爆仓后短短几天，大批硅谷投资者主动联系要求追加投资</b>，基金反而「暂不接受新资金」。红杉合伙人 Pat Grady 公开说「他将长期是硅谷的重要人物」，Elad Gil 宣布首次申请入资，Redpoint 的 Logan Bartlett 点破：「他被揍了一拳，反而激起大家的团结。」与此同时，Barclays 曾以「单一行业敞口过集中」拒做 prime broker。<b>真正的风险阀门不在 LP 手里，在几家 prime broker 的风控台上</b>。</p><div class="story-quote">爆仓不是终点：<b>硅谷的失败定价，把伤疤变成了勋章</b>。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="svws">
+  <div class="container">
+    <div class="section-title"><span class="num">05</span>底层机制 · 硅谷 vs 华尔街</div>
+    <p class="section-lead">Aschenbrenner 的爆仓不是孤立事件，它暴露了硅谷与华尔街两套资本逻辑的碰撞。表面是文化，底层是四个变量：<b style="color:var(--spark)">时间尺度、资本结构、失败定价、信息类型</b>。文化只是这四个变量的涌现产物。</p>
+    <div class="var-grid">
+      <div class="var-chip"><div class="vi">⏳</div><div class="vt">时间尺度</div><div class="vs">7-10 年 vs 按日盯市</div></div>
+      <div class="var-chip"><div class="vi">🏗️</div><div class="vt">资本结构</div><div class="vs">call option vs put option</div></div>
+      <div class="var-chip"><div class="vi">💀</div><div class="vt">失败定价</div><div class="vs">伤疤是勋章 vs 案底</div></div>
+      <div class="var-chip"><div class="vi">📡</div><div class="vt">信息类型</div><div class="vs">判断人 vs 测量仓位</div></div>
+    </div>
+
+    <div class="collision">
+      <h3><span class="cnum">变量 1</span>时间尺度 · 买期权 vs 做市</h3>
+      <div class="claim claim-dean"><span class="who">硅谷的钱</span><p>锁 7-10 年（VC 基金周期），赌「方向对不对」。早五年入场不是错误，是成本。所以 Aschenbrenner 今年 +80% 后爆仓，硅谷看到的是「他方向对了」。</p></div>
+      <div class="claim claim-aschen"><span class="who">华尔街的钱</span><p>按季度考核、按日盯市，赌「这个月扛不扛得住」。LTCM 的模型到今天都没被证伪，他们死在天时+杠杆，不是死在观点。</p></div>
+      <div class="collision-conclusion">
+        <div class="tag">结论</div>
+        <p><b>同一个人的同一笔交易，在两种时间尺度下是两种资产。</b></p>
+      </div>
+    </div>
+
+    <div class="collision">
+      <h3><span class="cnum">变量 2</span>资本结构 · 股权型 vs 债务型</h3>
+      <div class="claim claim-dean"><span class="who">硅谷的钱</span><p>本质是 <b>call option</b>：LP 拿可承受归零的小仓位，买一个 100x 的右尾。亏损是预算内的，是学费。</p></div>
+      <div class="claim claim-aschen"><span class="who">华尔街的钱</span><p>本质是 <b>put option</b>：养老金必须保本，杠杆资金有 margin call，它自带止损机制，不由人意志转移。Aschenbrenner 被 Citadel 折价接走仓位，就是 put option 被行权。</p></div>
+      <div class="collision-conclusion">
+        <div class="tag">结论</div>
+        <p><b>同一场爆仓，两种钱在两种规则下都理性。</b></p>
+      </div>
+    </div>
+
+    <div class="collision">
+      <h3><span class="cnum">变量 3</span>失败定价 · 伤疤是勋章 vs 伤疤是案底</h3>
+      <div class="claim claim-dean"><span class="who">硅谷</span><p>失败是资历。「烧掉过 2000 万」是加分项。行业共识是「方向对的人迟早赢」。被揍一拳反而激起团结。</p></div>
+      <div class="claim claim-aschen"><span class="who">华尔街</span><p>失败是污点。LTCM 合伙人的名字从此和「傲慢」绑定，Bill Hwang 直接消失。行业靠 reputation 自治。Barclays 拒客、大摩先拒后收，就是这种定价机制在运作。</p></div>
+      <div class="collision-conclusion">
+        <div class="tag">结论</div>
+        <p><b>真正的风险阀门不在 LP 手里，在几家 prime broker 的风控台上。</b></p>
+      </div>
+    </div>
+
+    <div class="collision">
+      <h3><span class="cnum">变量 4</span>信息类型 · 判断人 vs 测量仓位</h3>
+      <div class="claim claim-dean"><span class="who">硅谷的核心信息</span><p>不可测量的判断：创始人行不行、技术方向对不对，只能靠叙事和洞察。</p></div>
+      <div class="claim claim-aschen"><span class="who">华尔街的核心信息</span><p>可测量的数据。S3 能算出「超级集中+超级拥挤+超级高杠杆」，这是他们的商业模式本身。</p></div>
+      <div class="collision-conclusion">
+        <div class="tag">结论</div>
+        <p>所以两边对同一事件读出的东西天然不同：<b>一个读「这个人」，一个读「这个仓位」</b>。</p>
+      </div>
+    </div>
+
+    <div class="finding" style="margin-top:28px">
+      <div class="kicker">⚠ 最锋利的点</div>
+      <h2 style="font-size:clamp(20px,3.5vw,30px)">这两套东西正在融合<br>而融合区就是风险区</h2>
+      <p style="font-size:15px; color:var(--text2); max-width:720px; margin:0 auto; margin-top:12px">SoftBank 用硅谷叙事做华尔街规模的杠杆，Tiger 用 WS 模型做 VC，Citadel 拿真金白银接 AI 资产。<b style="color:var(--bad)">Aschenbrenner 的基金本身就是融合产物：硅谷的钱（湾区家办）跑华尔街的策略（集中+杠杆），却没有华尔街的风控</b>。他爆仓不是偶然，是资本结构错配的必然：SV 资本的信仰浓度 × WS 策略的杠杆倍数 = 两者缺点的交集。</p>
+      <p style="font-size:14px; color:var(--text3); max-width:720px; margin:0 auto; margin-top:14px">对投资者：持有标普500ETF 就是在买这个融合区的 beta。当 AI 叙事的钱（硅谷型）开始用杠杆（华尔街型）交易时，<b style="color:var(--spark)">波动是结构性的，不是情绪性的</b>，所以回撤会又快又深，仓位纪律永远优先于观点正确。</p>
+    </div>
+  </div>
+</section>
+<section class="section finding-section" id="finding">
+  <div class="container">
+    <div class="section-title"><span class="num">06</span>对撞最大发现</div>
+    <div class="finding fade-in">
+      <h2>AI 时代赚钱的人都有 <span class="loop">循环</span><br>只有 <span class="direction">方向</span> 的人需要杠杆<br>而杠杆会击穿信仰</h2>
+      <div class="loop-cards">
+        <div class="loop-card">
+          <div class="lname k">🟠 Karp · 应用循环</div>
+          <p>模型 → 企业场景 → 现金流，循环自洽。</p>
+          <div class="cycle"><b>最稳</b>：现金流自洽，不依赖单一金主</div>
+        </div>
+        <div class="loop-card">
+          <div class="lname d">🔵 Jeff Dean · 科研循环</div>
+          <p>假设 → 实验 → 评估 → 迭代，循环靠外部供血。</p>
+          <div class="cycle"><b>看金主耐心</b>：Alphabet 随时可撤</div>
+        </div>
+        <div class="loop-card none">
+          <div class="lname a">🔴 Aschenbrenner · 无循环</div>
+          <p>只有方向判断，不参与任何循环，靠杠杆弥补。</p>
+          <div class="cycle"><b>杠杆赌注</b>：margin call 不由信仰转移</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="section-title"><span class="num">07</span>反方自检 · 攻击 vs 回应</div>
+    <div class="counter fade-in">
+      <div class="counter-side counter-attack">
+        <span class="side-tag">🔴 最强攻击</span>
+        <blockquote>「你把三个案例凑成『价值链三层』，但 Karp 是上市公司 CEO（有估值动机）、Jeff Dean 是刚创业（有融资动机）、Aschenbrenner 是爆仓者（有自保动机）。三个都是利益绑定叙事，凑在一起是对号入座，不是发现。」</blockquote>
+      </div>
+      <div class="counter-vs">VS</div>
+      <div class="counter-side counter-defense">
+        <span class="side-tag">🟢 回应 · 行动证据比言论可靠</span>
+        <h4>言论会撒谎，行动不会</h4>
+        <p>这是真实风险，但三个案例的<b>行动证据</b>比言论可靠。Jeff Dean 离开 27 年大厂是行动、Alphabet 供血是行动、Aschenbrenner 加杠杆是行动、爆仓是行动。<b>对撞的价值不在三人的「说法」一致，在三个行动的资本结构差异</b>（现金流 vs 耐心资本 vs 杠杆）恰好覆盖了 AI 价值链的完整光谱。修正：把三人当「AI 时代的三种资本结构样本」，而不是「三个观点」。</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section" id="conclusion">
+  <div class="container">
+    <div class="section-title"><span class="num">08</span>投资判断</div>
+    <div class="conclusion fade-in">
+      <h3>一句话总结</h3>
+      <div class="big">Karp、Jeff Dean、Aschenbrenner 是 AI 价值链的三个切片：<b>应用层现金流、研究层耐心资本、金融层信仰杠杆</b>。<br>对撞的最大发现：<b>AI 时代真正赚钱的人都有「循环」</b>（应用循环/科研循环/训练循环），只有方向没有循环的人需要用杠杆弥补，而杠杆会击穿信仰。<br>三人的共同命门是同一个不可控变量：<b>递归自我改进是否成立</b>。</div>
+      <div class="invest">
+        <div class="invest-card rank1">
+          <div class="rank">🟢 最稳 · Karp 型</div>
+          <p>有循环且<b>现金流自洽</b>。模型→场景→现金流闭环，不依赖单一金主。</p>
+        </div>
+        <div class="invest-card rank2">
+          <div class="rank">🟡 看金主 · Jeff Dean 型</div>
+          <p>有循环但<b>靠单一金主供血</b>。科研循环成立，但 Alphabet 的耐心是关键变量。</p>
+        </div>
+        <div class="invest-card rank3">
+          <div class="rank">🔴 杠杆赌注 · Aschenbrenner 型</div>
+          <p>只有方向<b>没有循环</b>，靠杠杆放大，margin call 不由信仰转移。</p>
+        </div>
+      </div>
+      <p style="margin-top:28px; font-size:14px; color:var(--text2);"><b style="color:var(--spark)">投资判断</b>：AI 标的不看「谁方向对」，看「谁有循环 + 谁的资本结构匹配循环」。</p>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div>三案例对撞分析 · 2026-08-08 · 基于公开报道与行动证据</div>
+    <div class="sig">🦞 Ariste · 对撞分析</div>
+  </div>
+</footer>
+
+<button class="back-top" id="backTop" aria-label="回到顶部">↑</button>
+
+<script>
+// 滚动渐入
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// 阅读进度条
+const progress = document.getElementById('progress');
+const backTop = document.getElementById('backTop');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight);
+  progress.style.width = (scrolled * 100) + '%';
+  backTop.classList.toggle('show', h.scrollTop > 600);
+}, { passive: true });
+backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+// scrollspy：高亮当前区块
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+const spy = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+sections.forEach(s => spy.observe(s));
+</script>
+</body>
+</html>
